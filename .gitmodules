@@ -1,0 +1,3 @@
+[submodule "build_book/src/mdbook_quiz"]
+	path = build_book/src/mdbook_quiz
+	url = https://github.com/Serenali-1108/mdbook_quiz.git
