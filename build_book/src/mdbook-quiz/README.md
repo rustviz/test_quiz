@@ -1,9 +1,9 @@
 # mdbook-quiz: interactive quizzes for Markdown
 
-[![tests](https://github.com/willcrichton/mdbook-quiz/actions/workflows/main.yml/badge.svg)](https://github.com/willcrichton/mdbook-quiz/actions/workflows/main.yml)
+[![tests](https://github.com/cognitive-engineering-lab/mdbook-quiz/actions/workflows/main.yml/badge.svg)](https://github.com/cognitive-engineering-lab/mdbook-quiz/actions/workflows/main.yml)
 [![crates.io](https://img.shields.io/crates/v/mdbook-quiz.svg)](https://crates.io/crates/mdbook-quiz)
 
-_[live demo](https://willcrichton.net/mdbook-quiz/)_
+_[live demo](https://cognitive-engineering-lab.github.io/mdbook-quiz/)_
 
 This repository provides an [mdBook](https://github.com/rust-lang/mdBook) [preprocessor](https://rust-lang.github.io/mdBook/format/configuration/preprocessors.html) that allows you to add interactive quizzes to your Markdown books. A quiz looks like this:
 
@@ -41,11 +41,12 @@ And you can check your version by running `mdbook-quiz -V`. This repository uses
 
 ### From source
 
-You need Cargo and [pnpm](https://pnpm.io/) installed. Then run:
+You need Cargo and [npm](https://npmjs.org/) installed. Then run:
 
 ```
-git clone https://github.com/willcrichton/mdbook-quiz
+git clone https://github.com/cognitive-engineering-lab/mdbook-quiz
 cd mdbook-quiz
+npm install -g graco
 cargo install --path .
 ```
 
@@ -165,13 +166,12 @@ A question with multiple options that the user selects from.
 [[questions]]
 type = "MultipleChoice"
 prompt.prompt = "What does it mean if a variable `x` is immutable?"
-prompt.choices = [
+prompt.distractors = [
   "`x` is stored in the immutable region of memory.",
   "After being defined, `x` can be changed at most once.",
-  "`x` cannot be changed after being assigned to a value.",
   "You cannot create a reference to `x`."
 ]
-answer.answer = 2
+answer.answer = "`x` cannot be changed after being assigned to a value."
 context = """
 Immutable means "not mutable", or not changeable.
 """
@@ -183,14 +183,17 @@ Immutable means "not mutable", or not changeable.
 export interface MultipleChoicePrompt {
   /** The text of the prompt. */
   prompt: Markdown;
-  
-  /** An array of text explaining each choice. */
-  choices: Markdown[];
+
+  /** An array of incorrect answers. */
+  distractors: Markdown[];
+
+  /** If defined, don't randomize distractors and put answer at this index. */
+  answerIndex?: number;
 }
 
 export interface MultipleChoiceAnswer {
-  /** The index of the correct answer in the choices array (0-based). */
-  answer: number;
+  /** The text of the correct answer. */
+  answer: Markdown;
 }
 ```
 
@@ -214,7 +217,6 @@ fn main() {
 }
 """
 answer.doesCompile = false
-answer.lineNumber = 4
 context = """
 This is a compiler error because line 4 tries to mutate `x` when `x` is not marked as `mut`.
 """
@@ -233,10 +235,7 @@ export interface TracingAnswer {
   doesCompile: boolean;
 
   /** If doesCompile=true, then the contents of stdout after running the program */
-  stdout?: string;
-
-  /** If doesCompile=false, then the line number of the code causing the error */
-  lineNumber?: number;
+  stdout?: string;  
 }
 
 export type Tracing = QuestionFields<"Tracing", TracingPrompt, TracingAnswer>;
@@ -246,6 +245,6 @@ export type Tracing = QuestionFields<"Tracing", TracingPrompt, TracingAnswer>;
 
 You can configure mdbook-quiz by adding options to the `[preprocessor.quiz]` section of `book.toml`. The options are:
 
-* `validate` (boolean): If true, then mdbook-quiz will validate your quiz TOML files using the validator.js script installed with mdbook-quiz. You must have NodeJS installed on your machine and PATH for this to work.
+* `validate` (boolean): If true, then mdbook-quiz will validate your quiz TOML files using the validator.js script installed with mdbook-quiz. You must have NodeJS installed on your machine and PATH for this to work. You must also install the [spellchecker](https://www.npmjs.com/package/spellchecker) package on your NODE_PATH, e.g. via `npm i -g spellchecker`.
 * `fullscreen` (boolean): If true, then a quiz will take up the web page's full screen during use.
 * `cache-answers` (boolean): If true, then the user's answers will be saved in their browser's `localStorage`. Then the quiz will show the user's answers even after they reload the page.

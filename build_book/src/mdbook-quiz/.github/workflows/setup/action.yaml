@@ -1,0 +1,34 @@
+name: Setup
+runs:
+  using: composite
+  steps:
+    - uses: actions-rs/toolchain@v1
+      with:
+        profile: minimal
+        toolchain: stable
+        components: clippy
+    - uses: Swatinem/rust-cache@v1
+    - name: Install JS dependencies
+      run: |
+        npm install -g graco spellchecker
+        echo "NODE_PATH=$(npm config get prefix)/lib/node_modules" >> $GITHUB_ENV
+      shell: bash
+    # Note: we have to build before test so the build script is executed
+    - name: Build Rust package
+      uses: actions-rs/cargo@v1
+      with:
+        command: build
+    - name: Test Rust package
+      uses: actions-rs/cargo@v1
+      with:
+        command: test
+    - name: Lint Rust package
+      uses: actions-rs/cargo@v1
+      with:
+        command: clippy
+    # Build script in previous action should build js,
+    # so we don't need to run pnpm build here.
+    - name: Test JS package
+      run: NODE_LOG=debug graco test
+      working-directory: js
+      shell: bash

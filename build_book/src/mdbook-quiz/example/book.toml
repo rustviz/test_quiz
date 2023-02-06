@@ -6,6 +6,3 @@ src = "src"
 title = "example"
 
 [preprocessor.quiz]
-# fullscreen = true
-# validate = true
-cache-answer = true

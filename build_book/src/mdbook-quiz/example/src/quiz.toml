@@ -1,72 +1,38 @@
-
 [[questions]]
 type = "Visualization"
+prompt.prompt = "Which of the following visualizations matches the code provided?"
 prompt.program = """
 fn main() {
-    let x = 5;
-    let y = x;
+   let x = 5;
+   let y = x;
 }
 """
-prompt.prompt = """
-Which of the following visulization matched the code provided?
-"""
-prompt.code1 = """![](/vis_code.svg)"""
 prompt.viz1 = """![](/vis_timeline.svg)"""
-
 prompt.viz2 = """![](/vis_timeline_wrong.svg)"""
-
-prompt.choices = [
-  "A",
+answer.answer = "A"
+prompt.distractors = [
   "B"
 ]
-
-answer.answer = 1
 context = """
 See visualization for visible side effect.
 """
-
 
 [[questions]]
 type = "MultipleChoice"
-prompt.prompt = """The string resource that a initially owns is dropped
-between which two adjacent lines of output above?
-"""
-prompt.program = """
-fn id(y : String) -> String {y}
-fn f(x : String) -> i32 {
-  println!("Hello, {}!", x);
-  let z = id(x);
-  println!("Goodbye, {}!", z);
-  42
-}
-fn main() {
-  println!("Welcome!");
-  {
-    let a = String::from("world");
-    println!("Thinking...");
-    let q = f(a);
-    println!("The meaning of life is: {}.", q);
-  }
-  println!("Done.");
-}
-"""
-prompt.choices = [
-  "After Goodbye, world!.",
-  "After The meaning of life is: 42",
-  "After Done.",
-  "After Welcome!"
+prompt.prompt = "What does it mean if a variable `x` is immutable?"
+answer.answer = "`x` cannot be changed after being assigned to a value."
+prompt.distractors = [
+  "`x` is stored in the immutable region of memory.",
+  "After being defined, `x` can be changed at most once.",
+  "You cannot create a reference to `x`."
 ]
-
-answer.answer = 1
 context = """
-See visualization for visible side effect.
+Immutable means "not mutable", or not changeable.
 """
 
 [[questions]]
 type = "ShortAnswer"
-prompt.prompt = """Explain why by describing the events related to movement
-and borrowing that occur in the code above.
-"""
+prompt.prompt = "What is the keyword used after `let` to indicate that a variable can be mutated?"
 answer.answer = "mut"
 context = """
 For example, you can make a mutable variable `x` by writing: `let mut x = 1`.
